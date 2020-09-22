@@ -1,3 +1,4 @@
+import 'package:check_calculator_app/profile_page.dart';
 import 'package:flutter/material.dart';
 
 
@@ -8,36 +9,32 @@ class HomePage extends StatefulWidget{
 
 class HomePageState extends State<HomePage>{
 
-  int _hoursWorked = 0;
-  int _hourlyWage = 0;
-  static int totalMoneys = 0;
+  double _hoursWorked = 0;
+  double _hourlyWage = 0;
+  static double totalMoneys = 0;
+  double preTotalMoney = 0;
 
   final TextEditingController hoursWorked = new TextEditingController(text: "");
   final TextEditingController hourlyWages = new TextEditingController(text: "");
 
 
   void _setHoursWorked(){
-    _hoursWorked = int.parse(hoursWorked.text);
-  }
-  // int _get_hoursorked(){
-  //   return _hoursWorked;
-  // }
-  void _setWages(){
-    _hourlyWage = int.parse(hourlyWages.text);
-  }
-  // int _get_wages(){
-  //   return _hourlyWage;
-  // }
-  void _calculateMoneys(){
-    _setHoursWorked();
-    _setWages();
-    totalMoneys = _hoursWorked * _hourlyWage;
-    {Navigator.of(context).pushNamed("/CalculatePage");}
-  }
-  int _get_moneys(){
-    return totalMoneys;
+    _hoursWorked = double.parse(hoursWorked.text);
   }
 
+  void _getWages(){
+    _hourlyWage = User.hourlyWage;
+  }
+
+
+  void _calculateMoneys(){
+    _setHoursWorked();
+    _getWages();
+    preTotalMoney = _hoursWorked * _hourlyWage;
+    preTotalMoney -= (User.federalIncome + User.stateIncome + User.socialSecurity + User.medicare) * preTotalMoney;
+    totalMoneys = preTotalMoney;
+    {Navigator.of(context).pushNamed("/CalculatePage");}
+  }
 
 
   @override
@@ -48,14 +45,14 @@ class HomePageState extends State<HomePage>{
         centerTitle: true,
         backgroundColor: Colors.green,
       ),
-      body: new Container(
+      body: Container(
         color: Colors.white10,
         padding: const EdgeInsets.all(80.0),
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new TextField(
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.numberWithOptions(decimal: true, signed: false),
               textAlign: TextAlign.center,
               controller: hoursWorked,
               decoration: InputDecoration(
@@ -68,23 +65,9 @@ class HomePageState extends State<HomePage>{
                 color: Colors.green,
               ),
             ),
-            new TextField(
-              textAlign: TextAlign.center,
-              keyboardType: TextInputType.number,
-              controller: hourlyWages,
-              decoration: InputDecoration(
-                  hintText: "Hourly Wages",
-                  hintStyle: TextStyle(
-                      color: Colors.grey
-                  )
-              ),
-              style: TextStyle(
-                  color: Colors.green
-              ),
-            ),
             new IconButton(
                 icon: Icon(Icons.attach_money),
-                onPressed: _calculateMoneys, //TODO have this button calculate the two numbers from the two text fields and transtion to the next page with simply a large "total amount earned" all cool like in the middle of the screen
+                onPressed: _calculateMoneys,
                 color: Colors.green
             ),
           ],
